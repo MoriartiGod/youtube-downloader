@@ -119,7 +119,36 @@ def download():
     except Exception as e:
         print(f"DOWNLOAD ERROR: {e}")
         return f"Ошибка: {str(e)}", 500
+@app.route("/test-youtube")
+def test_youtube():
+    import yt_dlp
 
+    url = "https://www.youtube.com/watch?v=tl05LLqL2gQ"
+
+    opts = {
+        "quiet": False,
+        "js_runtimes": {"node": {}},
+        "remote_components": {"ejs": ["github"]},
+        "noplaylist": True,
+        "skip_download": True,
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+
+        return {
+            "ok": True,
+            "title": info.get("title"),
+            "height": info.get("height"),
+            "formats": len(info.get("formats", []))
+        }
+
+    except Exception as e:
+        return {
+            "ok": False,
+            "error": str(e)
+        }, 500
 
 @app.route("/test-youtube")
 def test_youtube():
