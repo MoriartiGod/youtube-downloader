@@ -427,7 +427,11 @@
         progressSection.style.display = "block";
 
         button.disabled = true;
+	    <div class="cf-turnstile"
+         data-sitekey="0x4AAAAAAFQM3ji3ojRKDNcD">
+		</div>
 
+		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
         button.textContent = "Скачивание...";
 
         let progress = 0;
