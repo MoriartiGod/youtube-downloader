@@ -6,6 +6,8 @@ import uuid
 app = Flask(__name__)
 
 DOWNLOAD_DIR = "/tmp/downloads"
+COOKIE_FILE = "/etc/secrets/cookies.txt"
+
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 
@@ -14,19 +16,13 @@ def get_common_options(output):
         "outtmpl": output,
         "noplaylist": True,
         "quiet": False,
-<<<<<<< HEAD
 
-=======
+        "cookiefile": COOKIE_FILE,
 
-        "cookiefile": "/etc/secrets/cookies.txt",
-
->>>>>>> 696f88d (Add YouTube cookies)
-        # YouTube JavaScript challenge solving
         "js_runtimes": {
             "node": {}
         },
 
-        # Download EJS challenge solver components
         "remote_components": {
             "ejs": ["github"]
         },
@@ -57,12 +53,9 @@ def download():
     common = get_common_options(output)
 
     if format_type == "mp3":
-
         options = {
             **common,
-
             "format": "bestaudio/best",
-
             "postprocessors": [
                 {
                     "key": "FFmpegExtractAudio",
@@ -73,7 +66,6 @@ def download():
         }
 
     else:
-
         if quality == "best":
             video_format = "bestvideo+bestaudio/best"
         else:
@@ -85,13 +77,11 @@ def download():
 
         options = {
             **common,
-
             "format": video_format,
             "merge_output_format": "mp4",
         }
 
     try:
-
         with yt_dlp.YoutubeDL(options) as ydl:
             ydl.download([url])
 
@@ -129,25 +119,15 @@ def download():
 
 @app.route("/test-youtube")
 def test_youtube():
-
     url = "https://www.youtube.com/watch?v=tl05LLqL2gQ"
 
-    options = {
-        "quiet": False,
-        "noplaylist": True,
-        "skip_download": True,
+    options = get_common_options(
+        os.path.join(DOWNLOAD_DIR, "test-%(ext)s")
+    )
 
-        "js_runtimes": {
-            "node": {}
-        },
-
-        "remote_components": {
-            "ejs": ["github"]
-        },
-    }
+    options["skip_download"] = True
 
     try:
-
         with yt_dlp.YoutubeDL(options) as ydl:
             info = ydl.extract_info(
                 url,
@@ -162,7 +142,6 @@ def test_youtube():
         }
 
     except Exception as e:
-
         print(f"TEST ERROR: {e}")
 
         return {
@@ -170,60 +149,18 @@ def test_youtube():
             "error": str(e)
         }, 500
 
-<<<<<<< HEAD
-@app.route("/test-youtube")
-def test_youtube():
 
-    url = "https://www.youtube.com/watch?v=tl05LLqL2gQ"
-
-    options = {
-        "quiet": False,
-        "noplaylist": True,
-        "skip_download": True,
-
-        "js_runtimes": {
-            "node": {}
-        },
-
-        "remote_components": {
-            "ejs": ["github"]
-        },
-    }
-
-    try:
-
-        with yt_dlp.YoutubeDL(options) as ydl:
-            info = ydl.extract_info(
-                url,
-                download=False
-            )
-
-        return {
-            "ok": True,
-            "title": info.get("title"),
-            "height": info.get("height"),
-            "formats": len(info.get("formats", []))
-        }
-
-    except Exception as e:
-
-        print(f"TEST ERROR: {e}")
-
-        return {
-            "ok": False,
-            "error": str(e)
-        }, 500
 @app.route("/test-cookies")
 def test_cookies():
-    cookie_path = "/etc/secrets/cookies.txt"
-
     return {
-        "exists": os.path.exists(cookie_path),
-        "size": os.path.getsize(cookie_path) if os.path.exists(cookie_path) else 0
+        "exists": os.path.exists(COOKIE_FILE),
+        "size": (
+            os.path.getsize(COOKIE_FILE)
+            if os.path.exists(COOKIE_FILE)
+            else 0
+        )
     }
-=======
->>>>>>> 696f88d (Add YouTube cookies)
-@app.route("/test-cookies")
+
 
 if __name__ == "__main__":
     app.run(
