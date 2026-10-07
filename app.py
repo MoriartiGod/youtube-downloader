@@ -14,7 +14,13 @@ def get_common_options(output):
         "outtmpl": output,
         "noplaylist": True,
         "quiet": False,
+<<<<<<< HEAD
 
+=======
+
+        "cookiefile": "/etc/secrets/cookies.txt",
+
+>>>>>>> 696f88d (Add YouTube cookies)
         # YouTube JavaScript challenge solving
         "js_runtimes": {
             "node": {}
@@ -119,36 +125,7 @@ def download():
     except Exception as e:
         print(f"DOWNLOAD ERROR: {e}")
         return f"Ошибка: {str(e)}", 500
-@app.route("/test-youtube")
-def test_youtube():
-    import yt_dlp
 
-    url = "https://www.youtube.com/watch?v=tl05LLqL2gQ"
-
-    opts = {
-        "quiet": False,
-        "js_runtimes": {"node": {}},
-        "remote_components": {"ejs": ["github"]},
-        "noplaylist": True,
-        "skip_download": True,
-    }
-
-    try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-
-        return {
-            "ok": True,
-            "title": info.get("title"),
-            "height": info.get("height"),
-            "formats": len(info.get("formats", []))
-        }
-
-    except Exception as e:
-        return {
-            "ok": False,
-            "error": str(e)
-        }, 500
 
 @app.route("/test-youtube")
 def test_youtube():
@@ -193,6 +170,52 @@ def test_youtube():
             "error": str(e)
         }, 500
 
+<<<<<<< HEAD
+@app.route("/test-youtube")
+def test_youtube():
+
+    url = "https://www.youtube.com/watch?v=tl05LLqL2gQ"
+
+    options = {
+        "quiet": False,
+        "noplaylist": True,
+        "skip_download": True,
+
+        "js_runtimes": {
+            "node": {}
+        },
+
+        "remote_components": {
+            "ejs": ["github"]
+        },
+    }
+
+    try:
+
+        with yt_dlp.YoutubeDL(options) as ydl:
+            info = ydl.extract_info(
+                url,
+                download=False
+            )
+
+        return {
+            "ok": True,
+            "title": info.get("title"),
+            "height": info.get("height"),
+            "formats": len(info.get("formats", []))
+        }
+
+    except Exception as e:
+
+        print(f"TEST ERROR: {e}")
+
+        return {
+            "ok": False,
+            "error": str(e)
+        }, 500
+
+=======
+>>>>>>> 696f88d (Add YouTube cookies)
 
 if __name__ == "__main__":
     app.run(
