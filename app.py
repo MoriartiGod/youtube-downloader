@@ -9,6 +9,24 @@ DOWNLOAD_DIR = "/tmp/downloads"
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 
+def get_common_options(output):
+    return {
+        "outtmpl": output,
+        "noplaylist": True,
+        "quiet": False,
+
+        # YouTube JavaScript challenge solving
+        "js_runtimes": {
+            "node": {}
+        },
+
+        # Download EJS challenge solver components
+        "remote_components": {
+            "ejs": ["github"]
+        },
+    }
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -30,19 +48,7 @@ def download():
         file_id + ".%(ext)s"
     )
 
-    common = {
-        "outtmpl": output,
-        "noplaylist": True,
-        "quiet": False,
-
-        "js_runtimes": {
-            "node": {}
-        },
-
-        "remote_components": {
-            "ejs": ["github"]
-        },
-    }
+    common = get_common_options(output)
 
     if format_type == "mp3":
 
@@ -64,7 +70,6 @@ def download():
 
         if quality == "best":
             video_format = "bestvideo+bestaudio/best"
-
         else:
             video_format = (
                 f"bestvideo[height<={quality}]"
@@ -76,7 +81,6 @@ def download():
             **common,
 
             "format": video_format,
-
             "merge_output_format": "mp4",
         }
 
@@ -111,23 +115,38 @@ def download():
                 pass
 
         return response
+
+    except Exception as e:
+        print(f"DOWNLOAD ERROR: {e}")
+        return f"Ошибка: {str(e)}", 500
+
+
 @app.route("/test-youtube")
 def test_youtube():
-    import yt_dlp
 
     url = "https://www.youtube.com/watch?v=tl05LLqL2gQ"
 
-    opts = {
+    options = {
         "quiet": False,
-        "js_runtimes": {"node": {}},
-        "remote_components": {"ejs": ["github"]},
         "noplaylist": True,
         "skip_download": True,
+
+        "js_runtimes": {
+            "node": {}
+        },
+
+        "remote_components": {
+            "ejs": ["github"]
+        },
     }
 
     try:
-        with yt_dlp.YoutubeDL(opts) as ydl:
-            info = ydl.extract_info(url, download=False)
+
+        with yt_dlp.YoutubeDL(options) as ydl:
+            info = ydl.extract_info(
+                url,
+                download=False
+            )
 
         return {
             "ok": True,
@@ -137,13 +156,17 @@ def test_youtube():
         }
 
     except Exception as e:
+
+        print(f"TEST ERROR: {e}")
+
         return {
             "ok": False,
             "error": str(e)
         }, 500
-    except Exception as e:
-        return f"Ошибка: {str(e)}", 500
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(
+        host="0.0.0.0",
+        port=10000
+    )
