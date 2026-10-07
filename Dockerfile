@@ -13,6 +13,11 @@ WORKDIR /app
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
+git add Dockerfile .gitignore
+git commit -m "Update Dockerfile and ignore cookies"
+# Проверяем Node.js во время сборки
+RUN node --version
+RUN ffmpeg -version
 
 # Проверяем Node.js во время сборки
 RUN node --version
