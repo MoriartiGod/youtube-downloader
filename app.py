@@ -213,9 +213,17 @@ def test_youtube():
             "ok": False,
             "error": str(e)
         }, 500
+@app.route("/test-cookies")
+def test_cookies():
+    cookie_path = "/etc/secrets/cookies.txt"
 
+    return {
+        "exists": os.path.exists(cookie_path),
+        "size": os.path.getsize(cookie_path) if os.path.exists(cookie_path) else 0
+    }
 =======
 >>>>>>> 696f88d (Add YouTube cookies)
+@app.route("/test-cookies")
 
 if __name__ == "__main__":
     app.run(
